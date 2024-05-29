@@ -33,7 +33,9 @@ print(eng_kor)
 사전의 메서드 keys(), values()를 사용합니다.
 '''
 print(eng_kor.keys())
-print(list(eng_kor.values())) # 적절한 자료형(list 등)으로 변환해서 사용
+print(list(eng_kor.values())) 
+# 'dict_keys(리스트) 혹은 dict_values' 형태로 반환되므로 적절한 자료형(list 등)으로 변환해서 사용
+
 
 # 사전의 반복문 처리
 '''
