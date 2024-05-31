@@ -58,8 +58,31 @@ driver.get('https://www.aladin.co.kr/shop/common/wbest.aspx?BranchType=1&start=w
 driver.implicitly_wait(10)
 
 # 엑셀에 텍스트 저장 (헤더 만들기)
-cell_format = workbook.add_format({'bold': True, 'font_color' : 'red', 'bg_color' : 'yellow', 'font_size' : '13'})
+cell_format = workbook.add_format({
+    'font_name' : '함초롬돋움',
+    'bold': True,
+    'font_color' : 'red',
+    'bg_color' : 'yellow',
+    'font_size' : '15',
+    'align' : 'center',
+    'valign' : 'vcenter', #수직 정렬
+    'border' : 2, # border 숫자마다 다른 디자인 (1은 얇은 선, 2는 미디움선, 3은 dashed ...)
+    'border_color' : 'black'
+})
+
+# 셀 너비 조정은 worksheet에다가 적용할 것. 참고로 일괄 적용됨.
+# worksheet.set_column(시작열 번호(인덱스 번호로 지정), 끝열 번호, 너비, 서식양식(format/없으면 생략 가능))
+worksheet.set_column(1, 6, 40)
+
+#셀 높이 조정
+# worksheet.set_row(행 번호, 높이, 서식양식(format/없으면 생략 가능))
+for n in range(1, 401):
+    worksheet.set_row(n, 100)
+
+
 # worksheet write() 메서드의 매개값1: 작성할 셀, 매개값2: 작성 내용, 매개값3: 서식
+'''
+-> 셀 번호를 열+행으로 직접 지목해서 값을 넣은 경우
 worksheet.write('A1', '썸네일', cell_format)
 worksheet.write('B1', '제목', cell_format)
 worksheet.write('C1', '작가', cell_format)
@@ -67,6 +90,16 @@ worksheet.write('D1', '출판사', cell_format)
 worksheet.write('E1', '출판일', cell_format)
 worksheet.write('F1', '가격', cell_format)
 worksheet.write('G1', '링크', cell_format)
+'''
+
+# enumerate 함수는 순서가 있는 자료형(리스트, 튜플, 문자열)을 전달받아
+# 인덱스와 해당 항목을 포함하는 튜플을 반환하는 함수입니다.
+headers = ['썸네일', '제목', '작가', '출판사', '출판일', '가격', '링크']
+for col, header in enumerate(headers):
+    # write(행번호, 열번호, 셀에 들어갈 문자열, 포맷 형식)
+    # 행번호는 0번(첫번째 행)으로 고정
+    # col에 엔덕스가 전달됨
+    worksheet.write(0, col, header, cell_format)
 
 cur_page_num = 2 # 현재 페이지 번호
 target_page_num = 9 # 목적지 페이지 번호
@@ -100,9 +133,25 @@ while cur_page_num <= target_page_num:
 
         # 작가쪽 영역 데이터 상세 분해
         author_data = author.text.split('|')
+
+        '''
         author_name = author_data[0].strip()
         company = author_data[1].strip()
         pub_day = author_data[2].strip()
+        '''
+        # list comprehension 문법
+        # 기존의 list를 기반으로 새로운 list를 선언하는데
+        # list 내부의 요소들에게 일괄적으로 적용할 수식, 조건, 함수의 리턴값을 동시에 설정할 수 있는 문법
+        author_name, company, pub_day = [info.strip() for info in author_data]
+        '''
+        예시:
+        # map() 함수는 조건식을 사용이 불가하지만(조건문 쓰려면 filter() 함수가 있음) 이 문법은 조건식도 쓸 수 있음(pythonic code)
+        li = [1, 2, 3, 4, 5]
+        new_li = [n*2 for n in li] # [1, 4, 6, 8, 10]이 반환됨
+
+        li = [1, 2, 3, 4, 5, 6, 7]
+        new_li = [n for n in li if n%2 != 0] # [1, 3, 5, 7]
+        '''
 
         # 가격
         # 작가 다음 li 요소가 가격 li이다.
