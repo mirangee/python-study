@@ -6,16 +6,6 @@ from datetime import datetime
 import codecs
 from bs4 import BeautifulSoup
 
-'''
-Quiz: 멜론 Top100 목록에서 1~100위 가져오기
-# 순위
-# 가수명
-# 앨범명
-# 노래 제목
-
-파일명: 멜론일간차트순위_2024년_5월_31일_11시기준.txt
-'''
-
 d = datetime.today()
 
 file_path = f'c:/MyWorkspace/upload/멜론일간차트순위_{d.year}년_{d.month}월_{d.day}일_{d.hour}시기준.txt'
@@ -39,42 +29,40 @@ src = driver.page_source
 
 soup = BeautifulSoup(src, 'html.parser')
 
+
+'''
+Quiz: 멜론 Top100 목록에서 1~100위 가져오기
+# 순위
+# 가수명
+# 앨범명
+# 노래 제목
+
+파일명: 멜론일간차트순위_2024년_5월_31일_11시기준.txt
+'''
+
 with codecs.open(file_path, mode= 'a', encoding='utf-8') as f:
     
     rank = 1 # 순위    
 
-    for n in range(0, 100):  
-        if (rank <= 50):
-            div_list = soup.select('tr.lst50')
-        else: 
-            div_list = soup.select('tr.lst100')
-            n = n - 50
-        
-        # ellipsis_list= div_list[n].select('div.ellipsis')
+    # 코드를 보면 1~50위는 tr 클래스명이 lst50, 51~100위는 lst100이다.
+    # 두 경우의 수로 나누어 처리하자.
+    for n in [50,  100]:  
+        tr_song_list = soup.select(f'tr.lst{n}')
 
-        # title = ellipsis_list[0].find_all('a')
-        # singer = ellipsis_list[1].find_all('a')
-        # album = ellipsis_list[2].find_all('a')
+        for tr_song in tr_song_list:
+                song_info = tr_song.select('div.ellipsis a')
 
-        # f.write(f'# 순위: {rank}위\n')
-        # f.write(f'# 가수명: {singer[0].text}\n')
-        # f.write(f'# 앨범명: {album[0].text}\n')
-        # f.write(f'# 노래 제목: {title[0].text}\n')
-        # f.write('-'*50+'\n')
+                title = song_info[0].text
+                singer = song_info[1].text
+                album = song_info[3].text
 
-        ellipsis_list= div_list[n].select('div.ellipsis a')
+                f.write(f'# 순위: {rank}위\n')
+                f.write(f'# 가수명: {singer}\n')
+                f.write(f'# 앨범명: {album}\n')
+                f.write(f'# 노래 제목: {title}\n')
+                f.write('-'*50+'\n')
+                
 
-        title = ellipsis_list[0].text
-        singer = ellipsis_list[1].text
-        album = ellipsis_list[3].text
-
-        f.write(f'# 순위: {rank}위\n')
-        f.write(f'# 가수명: {singer}\n')
-        f.write(f'# 앨범명: {album}\n')
-        f.write(f'# 노래 제목: {title}\n')
-        f.write('-'*50+'\n')
-        
-
-        rank += 1
+                rank += 1
     
-    print('파일 저장 완료!')
+print('파일 저장 완료!')
