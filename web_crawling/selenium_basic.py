@@ -44,7 +44,7 @@ t.sleep(1)
 # 자동으로 텍스트 입력하기
 # 아이디 입력
 id_input = driver.find_element(By.XPATH, '//*[@id="id"]')
-id_input.send_keys('pmrang18') # send_keys() 메서드: 해당 요소에 입력하게 하는 메서드
+id_input.send_keys('pmr18') # send_keys() 메서드: 해당 요소에 입력하게 하는 메서드
 
 t.sleep(1)
 
